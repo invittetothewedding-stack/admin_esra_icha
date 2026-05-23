@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Guestbook - Esra & Icha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #0d0b08;
+      color: #f5ede0;
+      font-family: 'Montserrat', sans-serif;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .admin-shell {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-end;
+      border-bottom: 0.5px solid rgba(201,169,110,0.22);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kicker {
+      color: #c9a96e;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .muted {
+      color: #9e8a72;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .panel {
+      border: 0.5px solid rgba(201,169,110,0.18);
+      border-radius: 6px;
+      background: rgba(201,169,110,0.045);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .login-form {
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .field {
+      width: 100%;
+      border: 0.5px solid rgba(201,169,110,0.22);
+      border-radius: 4px;
+      background: rgba(13,11,8,0.7);
+      color: #f5ede0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    .field::placeholder { color: #6d5f50; }
+    .field:focus { border-color: rgba(201,169,110,0.75); }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+      border: 0.5px solid #c9a96e;
+      color: #c9a96e;
+      background: transparent;
+      padding: 11px 18px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, opacity 0.25s;
+    }
+
+    .btn:hover {
+      background: rgba(201,169,110,0.12);
+    }
+
+    .btn:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    .btn-danger {
+      border-color: #d4a28f;
+      color: #d4a28f;
+    }
+
+    .admin-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .status {
+      min-height: 18px;
+      color: #9e8a72;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 0.75rem;
+    }
+
+    .status.error { color: #d4a28f; }
+    .status.success { color: #c9a96e; }
+
+    .guest-list {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .guest-card {
+      border: 0.5px solid rgba(201,169,110,0.16);
+      border-radius: 6px;
+      background: rgba(201,169,110,0.035);
+      padding: 1rem;
+    }
+
+    .guest-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 0.6rem;
+    }
+
+    .guest-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-style: italic;
+      font-weight: 300;
+      overflow-wrap: anywhere;
+    }
+
+    .guest-time {
+      color: #6d5f50;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .guest-message {
+      color: #b8a38a;
+      font-size: 13px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state {
+      border: 0.5px solid rgba(201,169,110,0.14);
+      border-radius: 6px;
+      color: #7a6a58;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 560px) {
+      body { padding: 1.25rem 0.85rem 3rem; }
+
+      .admin-header,
+      .admin-toolbar,
+      .guest-head {
+        display: block;
+      }
+
+      .admin-header .btn,
+      .admin-toolbar .btn {
+        width: 100%;
+        margin-top: 1rem;
+      }
+
+      .guest-time {
+        display: block;
+        margin-top: 0.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <p class="kicker">Admin</p>
+        <h1>Guestbook</h1>
+        <p class="muted">Kelola ucapan undangan Esra & Icha dari Firestore.</p>
+      </div>
+      <button id="logoutButton" class="btn hidden" type="button">Keluar</button>
+    </header>
+
+    <section id="loginPanel" class="panel">
+      <p class="kicker">Login Admin</p>
+      <p class="muted">Masuk dengan akun admin Firebase Authentication untuk menghapus ucapan.</p>
+
+      <form id="loginForm" class="login-form" novalidate>
+        <input id="emailInput" class="field" type="email" placeholder="Email admin" autocomplete="email" required>
+        <input id="passwordInput" class="field" type="password" placeholder="Password" autocomplete="current-password" required>
+        <button id="loginButton" class="btn" type="submit">Masuk</button>
+        <p id="loginStatus" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="adminPanel" class="hidden">
+      <div class="admin-toolbar">
+        <div>
+          <p class="kicker">Daftar Ucapan</p>
+          <p id="summaryText" class="muted">Memuat ucapan...</p>
+        </div>
+        <a class="btn" href="undangan.html" target="_blank" rel="noopener">Lihat Undangan</a>
+      </div>
+
+      <div id="guestList" class="guest-list">
+        <div class="empty-state">Memuat ucapan...</div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      deleteDoc,
+      doc,
+      query,
+      orderBy,
+      limit,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    /*
+      Pakai firebaseConfig yang sama dengan undangan.html.
+      Firebase Console > Project settings > General > Web app config.
+    */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmxFNXuhWzOqdIpTz_GI-scRQ7DsItX6A",
+      authDomain: "undangan-esra-icha-e5b00.firebaseapp.com",
+      projectId: "undangan-esra-icha-e5b00",
+      storageBucket: "undangan-esra-icha-e5b00.firebasestorage.app",
+      messagingSenderId: "1017009176637",
+      appId: "1:1017009176637:web:f7590e4665b90594ecaa54",
+      measurementId: "G-M3LVG51QY7"
+    };
+
+    const loginPanel = document.getElementById("loginPanel");
+    const adminPanel = document.getElementById("adminPanel");
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginButton = document.getElementById("loginButton");
+    const logoutButton = document.getElementById("logoutButton");
+    const loginStatus = document.getElementById("loginStatus");
+    const summaryText = document.getElementById("summaryText");
+    const guestList = document.getElementById("guestList");
+
+    const configReady = Object.values(firebaseConfig).every((value) => value && !value.includes("ISI_"));
+    const dateFormatter = new Intl.DateTimeFormat("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    let unsubscribeGuestbook = null;
+    let db = null;
+
+    function setLoginStatus(message, type = "") {
+      loginStatus.textContent = message;
+      loginStatus.className = `status ${type}`.trim();
+    }
+
+    function setLoginLoading(isLoading) {
+      loginButton.disabled = isLoading;
+      loginButton.textContent = isLoading ? "Memproses..." : "Masuk";
+    }
+
+    function getAuthErrorMessage(error) {
+      const messages = {
+        "auth/api-key-not-valid.-please-pass-a-valid-api-key.": "API key Firebase belum valid. Ganti apiKey dengan nilai lengkap dari Firebase Console.",
+        "auth/invalid-api-key": "API key Firebase belum valid. Ganti apiKey dengan nilai lengkap dari Firebase Console.",
+        "auth/invalid-email": "Format email admin belum benar.",
+        "auth/invalid-credential": "Email atau password admin salah, atau user admin belum dibuat di Firebase Authentication.",
+        "auth/user-not-found": "User admin belum dibuat di Firebase Authentication.",
+        "auth/wrong-password": "Password admin salah.",
+        "auth/operation-not-allowed": "Provider Email/Password belum aktif di Firebase Authentication.",
+        "auth/too-many-requests": "Terlalu banyak percobaan login. Tunggu sebentar lalu coba lagi."
+      };
+
+      return messages[error.code] || `Login gagal: ${error.code || error.message}`;
+    }
+
+    function setEmpty(message) {
+      guestList.textContent = "";
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = message;
+      guestList.appendChild(empty);
+    }
+
+    function formatTimestamp(timestamp) {
+      if (!timestamp || typeof timestamp.toDate !== "function") return "Baru saja";
+      return dateFormatter.format(timestamp.toDate()).replace(".", ":");
+    }
+
+    function renderGuestbook(snapshot) {
+      const docs = snapshot.docs;
+      summaryText.textContent = `${docs.length} ucapan terbaru tampil di halaman ini.`;
+      guestList.textContent = "";
+
+      if (docs.length === 0) {
+        setEmpty("Belum ada ucapan yang masuk.");
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      docs.forEach((guestDoc) => {
+        const data = guestDoc.data();
+        const card = document.createElement("article");
+        card.className = "guest-card";
+
+        const head = document.createElement("div");
+        head.className = "guest-head";
+
+        const titleWrap = document.createElement("div");
+        const name = document.createElement("h2");
+        name.className = "guest-name";
+        name.textContent = data.name || "Tamu Undangan";
+
+        const time = document.createElement("time");
+        time.className = "guest-time";
+        time.textContent = formatTimestamp(data.createdAt);
+
+        const message = document.createElement("p");
+        message.className = "guest-message";
+        message.textContent = data.message || "";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "btn btn-danger";
+        deleteButton.type = "button";
+        deleteButton.textContent = "Hapus";
+        deleteButton.addEventListener("click", () => deleteGuestbookItem(guestDoc.id, deleteButton));
+
+        titleWrap.append(name, time);
+        head.append(titleWrap, deleteButton);
+        card.append(head, message);
+        fragment.appendChild(card);
+      });
+
+      guestList.appendChild(fragment);
+    }
+
+    async function deleteGuestbookItem(id, button) {
+      const isConfirmed = window.confirm("Hapus ucapan ini dari guestbook?");
+      if (!isConfirmed) return;
+
+      button.disabled = true;
+      button.textContent = "Menghapus...";
+
+      try {
+        await deleteDoc(doc(db, "guestbook", id));
+      } catch (error) {
+        console.error("Gagal menghapus ucapan:", error);
+        window.alert("Ucapan gagal dihapus. Periksa rules Firestore atau koneksi internet.");
+        button.disabled = false;
+        button.textContent = "Hapus";
+      }
+    }
+
+    function showAdmin() {
+      loginPanel.classList.add("hidden");
+      adminPanel.classList.remove("hidden");
+      logoutButton.classList.remove("hidden");
+    }
+
+    function showLogin() {
+      loginPanel.classList.remove("hidden");
+      adminPanel.classList.add("hidden");
+      logoutButton.classList.add("hidden");
+      setEmpty("Login terlebih dahulu untuk melihat ucapan.");
+
+      if (unsubscribeGuestbook) {
+        unsubscribeGuestbook();
+        unsubscribeGuestbook = null;
+      }
+    }
+
+    if (!configReady) {
+      setLoginStatus("Masukkan firebaseConfig terlebih dahulu agar admin aktif.", "error");
+      loginButton.disabled = true;
+      setEmpty("Admin siap digunakan setelah Firebase dikonfigurasi.");
+    } else {
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      db = getFirestore(app);
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          setLoginStatus("Email dan password wajib diisi.", "error");
+          return;
+        }
+
+        setLoginLoading(true);
+        setLoginStatus("Memproses login...");
+
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          loginForm.reset();
+          setLoginStatus("");
+        } catch (error) {
+          console.error("Login gagal:", error);
+          setLoginStatus(getAuthErrorMessage(error), "error");
+        } finally {
+          setLoginLoading(false);
+        }
+      });
+
+      logoutButton.addEventListener("click", async () => {
+        await signOut(auth);
+      });
+
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          showLogin();
+          return;
+        }
+
+        showAdmin();
+        summaryText.textContent = "Memuat ucapan...";
+        setEmpty("Memuat ucapan...");
+
+        const guestbookQuery = query(
+          collection(db, "guestbook"),
+          orderBy("createdAt", "desc"),
+          limit(100)
+        );
+
+        if (unsubscribeGuestbook) unsubscribeGuestbook();
+
+        unsubscribeGuestbook = onSnapshot(
+          guestbookQuery,
+          renderGuestbook,
+          (error) => {
+            console.error("Gagal memuat ucapan:", error);
+            summaryText.textContent = "Ucapan belum bisa dimuat.";
+            setEmpty("Periksa koneksi internet atau rules Firestore.");
+          }
+        );
+      });
+    }
+  </script>
+</body>
+</html>
